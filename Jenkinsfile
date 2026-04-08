@@ -6,8 +6,7 @@ pipeline {
             steps {
                 git branch:'main',url:'https://github.com/studyuann/cicd-test.git'
             }
-        }
-        
+        }        
         stage('Git clone end') {
             steps {
                sh 'touch cicd_test.txt'
