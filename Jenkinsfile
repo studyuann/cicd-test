@@ -12,7 +12,9 @@ stage('Github Pull') {
         }
 
         stage('Deploy Server') {
-            sshagent(credentials:['Deploy-Privatekey']) {
-                sh "scp -o StrictHostKeyChecking=no index.html ubuntu@3.35.149.250:/var/www/html/"
+            steps {            
+                 sshagent(credentials:['Deploy-Privatekey']) {
+                    sh "scp -o StrictHostKeyChecking=no index.html ubuntu@3.35.149.250:/var/www/html/"
+                 }
             }
         }
