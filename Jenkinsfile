@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment{
-        strDockerImage="studyuann/dicd-test:0.1"
+        strDockerImage="studyuann/cicd-test:0.1"
     }
     stages {
         stage('Github Pull') {
