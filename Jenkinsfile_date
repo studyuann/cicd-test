@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Github Pull') {
             steps {
-                git branch: 'main', credentialsId: 'git-private-auth', url: 'https://github.com/studyuann/cicd-test.git'
+                git branch: 'main', url: 'https://github.com/studyuann/cicd-test.git'
             }
         }
 
