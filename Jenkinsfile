@@ -9,7 +9,7 @@ pipeline {
     environment {
         // BUILD_ID는 Jenkins 기본 제공 변수입니다.
         strDockerTag = "${TODAY}_${BUILD_ID}"
-        strDockerImage = "sunnykid7/cicd-test:${strDockerTag}" 
+        strDockerImage = "studyuann/cicd-test:${strDockerTag}" 
     }
 
     stages {
