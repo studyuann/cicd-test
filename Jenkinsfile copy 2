@@ -14,7 +14,7 @@ pipeline {
         stage('Docker Image Build') {
             steps {
                 script{
-                    oDockImage = docker.build(strDockerImage,"-f Dockerfile .")
+                    oDockImage = docker.Build(strDockerImage,"-f Dockerfile .")
                 }
             }
         }
