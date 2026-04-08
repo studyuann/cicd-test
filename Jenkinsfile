@@ -1,12 +1,17 @@
+import java.text.SimpleDateFormat
+
+// 빌드 시작 시간을 기반으로 날짜 생성
 def TODAY = (new SimpleDateFormat("yyyyMMdd")).format(new Date())
 
 pipeline {
     agent any
 
-    environment{
-        strDockerTag="${TODAY}_${BUILD_ID}"
-10      strDockerImage="sunnykid7/cicd-test:0.1"
+    environment {
+        // BUILD_ID는 Jenkins 기본 제공 변수입니다.
+        strDockerTag = "${TODAY}_${BUILD_ID}"
+        strDockerImage = "sunnykid7/cicd-test:${strDockerTag}" 
     }
+
     stages {
         stage('Github Pull') {
             steps {
@@ -16,30 +21,33 @@ pipeline {
 
         stage('Docker Image Build') {
             steps {
-                script{
-                    oDockImage = docker.build(strDockerImage,"-f Dockerfile .")
+                script {
+                    // 환경 변수에서 정의한 이미지명과 태그를 사용합니다.
+                    oDockImage = docker.build("${env.strDockerImage}", "-f Dockerfile .")
                 }
             }
         }
-        stage('Docker Image Push'){ 
-            // 오타 주의: Dokcer -> Docker
+
+        stage('Docker Image Push') {
             steps {
                 script {
-                    docker.withRegistry('', 'docker-auth'){
+                    docker.withRegistry('', 'docker-auth') {
                         oDockImage.push()
+                        // (선택) latest 태그도 같이 push하고 싶다면:
+                        // oDockImage.push('latest')
                     }
                 }
             }
         }
-      stage('Deploy Server') {
-    steps {
-        sshagent(credentials: ['Deploy-Privatekey']) {
-            // 1. 우선 권한이 있는 홈 디렉토리로 파일을 보냅니다.
-            sh "ssh -o StrictHostKeyChecking=no ubuntu@3.35.149.250  docker container rm -f sampleweb "
-            // 2. SSH로 접속하여 sudo 권한으로 파일을 웹 서버 경로로 복사합니다.
-            // 주의: 서버의 ubuntu 계정이 'sudoers'에서 NOPASSWD 설정이 되어 있어야 합니다.
-            sh "ssh -o StrictHostKeyChecking=no ubuntu@3.35.149.250  docker run -d -p 80:80 --name sampleweb ${strDockerImage}"
-                 }
+
+        stage('Deploy Server') {
+            steps {
+                sshagent(credentials: ['Deploy-Privatekey']) {
+                    // rm 명령어 실패(컨테이너 없음) 시 빌드 중단을 방지하기 위해 || true 추가
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.35.149.250 'docker container rm -f sampleweb || true'"
+                    // 새 태그가 적용된 이미지를 실행
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.35.149.250 'docker run -d -p 80:80 --name sampleweb ${env.strDockerImage}'"
+                }
             }
         }
     }
