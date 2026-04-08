@@ -1,9 +1,6 @@
 pipeline {
     agent any
 
-    environment{
-        strDockerImage="studyuann/dicd-test:0.1"
-    }
     stages {
         stage('Github Pull') {
             steps {
@@ -11,11 +8,10 @@ pipeline {
             }
         }
 
-        stage('Docker Image Build') {
+        stage('Git clone end') {
             steps {
-                script{
-                    oDockImage = docker.Build(strDockerImage,"-f Dockerfile .")
-                }
+                sh 'touch cicd_test.txt'
+                sh 'echo "git clone end22" > cicd_test.txt'
             }
         }
         
