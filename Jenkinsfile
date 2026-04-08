@@ -14,6 +14,7 @@ pipeline {
                 sh 'echo "git clone end22" > cicd_test.txt'
             }
         }
+        
       stage('Deploy Server') {
     steps {
         sshagent(credentials: ['Deploy-Privatekey']) {
